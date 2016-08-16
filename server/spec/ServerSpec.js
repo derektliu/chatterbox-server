@@ -92,7 +92,7 @@ describe('Node Server Request Listener Function', function() {
     res = new stubs.response();
 
     handler.requestHandler(req, res);
-
+    debugger;
     expect(res._responseCode).to.equal(200);
     var messages = JSON.parse(res._data).results;
     expect(messages.length).to.be.above(0);

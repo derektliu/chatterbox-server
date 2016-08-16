@@ -16,6 +16,8 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
+var cache = [];
+
 var guid = function() {
   var s4 = function() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -29,7 +31,8 @@ var guid = function() {
 var mimeLookup = { 
   '.js': 'application/javascript', 
   '.html': 'text/html',
-  '.css': 'text/css'
+  '.css': 'text/css',
+  '.gif': 'image/gif'
 }; 
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -87,32 +90,37 @@ var requestHandler = function(request, response) {
       // response.writeHead(statusCode, headers);
       // response.end(JSON.stringify(body));
       var messages = require('./messages.json');
+      messages.results = cache.concat(messages.results);
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify(messages));
 
     } else if (request.method === 'POST') {
       statusCode = 201;
 
+      var body = [];
+
       request.on('data', function(chunk) {
 
-        // var obj = JSON.parse(chunk);
-        // obj.objectId = idCounter++;
-        // data.unshift(obj);
+        body.push(chunk);
 
-        var messages = require('./messages.json');
-        var newMessage = JSON.parse(chunk);
-        newMessage.objectId = guid();
+        // var messages = require('./messages.json');
+        // var newMessage = JSON.parse(chunk);
+        // newMessage.objectId = guid();
 
-        messages.results.unshift(newMessage);
-        messages = JSON.stringify(messages);
+        // messages.results.unshift(newMessage);
+        // messages = JSON.stringify(messages);
 
-        fs.writeFile('./messages.json', messages, (err) => {
-          if (err) { throw err; }
-          console.log('Saved messages onto server.');
-        });
+        // fs.writeFile('./messages.json', messages, (err) => {
+        //   if (err) { throw err; }
+        //   console.log('Saved messages onto server.');
+        // });
 
       });
-      request.on('end', function(chunk) {
+      request.on('end', function() {
+        var newMessage = JSON.parse(body.join(''));
+        newMessage.objectId = guid();
+        cache.unshift(newMessage);
+
         response.writeHead(statusCode, headers);
         response.end();
       });
@@ -167,5 +175,22 @@ var requestHandler = function(request, response) {
   // node to actually send all the data over to the client.
   // response.end(JSON.stringify({results: []}));
 };
+
+var saveMessages = function() {
+  var messages = require('./messages.json');
+
+  cache.forEach(function(element) {
+    messages.results.unshift(element);
+  });
+
+  cache = [];
+
+  fs.writeFile('./messages.json', JSON.stringify(messages), (err) => {
+    if (err) { throw err; }
+    console.log('Saved messages onto server.');
+  });
+};
+
+setInterval(saveMessages, 10000);
 
 exports.requestHandler = requestHandler;

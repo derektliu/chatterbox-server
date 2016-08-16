@@ -12,7 +12,14 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var data = [];
+var data = [{
+  username: 'Jono',
+  text: 'Do my bidding!',
+  roomname: 'lobby',
+  objectId: 0
+}];
+
+var idCounter = 1;
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -53,9 +60,13 @@ var requestHandler = function(request, response) {
 
   var headers = defaultCorsHeaders;
 
-  headers['Content-Type'] = 'JSON';
+  headers['Content-Type'] = 'text/plain';
   if (request.url === '/classes/messages') {
-    if (request.method === 'GET') {
+    if (request.method === 'OPTIONS') {
+      statusCode = 200;
+      response.writeHead(statusCode, headers);
+      response.end();
+    } else if (request.method === 'GET') {
       statusCode = 200;
       
       body.results = data;
@@ -67,7 +78,9 @@ var requestHandler = function(request, response) {
       statusCode = 201;
 
       request.on('data', function(chunk) {
-        data.push(JSON.parse(chunk));
+        var obj = JSON.parse(chunk);
+        obj.objectId = idCounter++;
+        data.unshift(obj);
       });
       request.on('end', function(chunk) {
         response.writeHead(statusCode, headers);

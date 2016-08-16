@@ -12,6 +12,10 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var http = require('http');
+var fs = require('fs');
+var path = require('path');
+
 var data = [{
   username: 'Jono',
   text: 'Do my bidding!',
@@ -20,6 +24,12 @@ var data = [{
 }];
 
 var idCounter = 1;
+
+var mimeLookup = { 
+  '.js': 'application/javascript', 
+  '.html': 'text/html',
+  '.css': 'text/css'
+}; 
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -61,12 +71,15 @@ var requestHandler = function(request, response) {
   var headers = defaultCorsHeaders;
 
   headers['Content-Type'] = 'text/plain';
+
+  /************************** Chat Client Messages Handler *******************/
   if (request.url === '/classes/messages') {
     if (request.method === 'OPTIONS') {
       statusCode = 200;
       response.writeHead(statusCode, headers);
       response.end();
     } else if (request.method === 'GET') {
+
       statusCode = 200;
       
       body.results = data;
@@ -87,6 +100,31 @@ var requestHandler = function(request, response) {
         response.end();
       });
     }
+    /************************ Webpage Handler (HTML) ***********************/
+  } else if (request.method === 'GET') {
+    var fileurl;
+    if (request.url === '/' || request.url.indexOf('?') !== -1) {
+      fileurl = '/index.html';
+    } else {
+      fileurl = request.url;
+    }
+
+    var filepath = path.resolve('./client' + fileurl); 
+    var fileExt = path.extname(filepath); 
+    var mimeType = mimeLookup[fileExt]; 
+
+    // response.writeHead(200, { 'content-type': 'text/html' });
+    // fs.createReadStream('../client/index.html').pipe(response);
+
+    if (mimeType) { 
+      fs.exists(filepath, function (exists) {
+        if (exists) {
+          response.writeHead(200, { 'content-type': mimeType }); 
+          fs.createReadStream(filepath).pipe(response);
+        }
+      });
+    }
+
   } else {
     statusCode = 404;
     response.writeHead(statusCode, headers);

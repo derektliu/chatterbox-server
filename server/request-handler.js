@@ -16,14 +16,15 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
-var data = [{
-  username: 'Jono',
-  text: 'Do my bidding!',
-  roomname: 'lobby',
-  objectId: 0
-}];
-
-var idCounter = 1;
+var guid = function() {
+  var s4 = function() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  };
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+};
 
 var mimeLookup = { 
   '.js': 'application/javascript', 
@@ -66,8 +67,8 @@ var requestHandler = function(request, response) {
   // The outgoing status.
 
   var statusCode;
-  var body = {results: []};
-
+  // var body = {results: []};
+  
   var headers = defaultCorsHeaders;
 
   headers['Content-Type'] = 'text/plain';
@@ -82,18 +83,34 @@ var requestHandler = function(request, response) {
 
       statusCode = 200;
       
-      body.results = data;
-
+      // body.results = data;
+      // response.writeHead(statusCode, headers);
+      // response.end(JSON.stringify(body));
+      var messages = require('./messages.json');
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(body));
+      response.end(JSON.stringify(messages));
 
     } else if (request.method === 'POST') {
       statusCode = 201;
 
       request.on('data', function(chunk) {
-        var obj = JSON.parse(chunk);
-        obj.objectId = idCounter++;
-        data.unshift(obj);
+
+        // var obj = JSON.parse(chunk);
+        // obj.objectId = idCounter++;
+        // data.unshift(obj);
+
+        var messages = require('./messages.json');
+        var newMessage = JSON.parse(chunk);
+        newMessage.objectId = guid();
+
+        messages.results.unshift(newMessage);
+        messages = JSON.stringify(messages);
+
+        fs.writeFile('./messages.json', messages, (err) => {
+          if (err) { throw err; }
+          console.log('Saved messages onto server.');
+        });
+
       });
       request.on('end', function(chunk) {
         response.writeHead(statusCode, headers);
@@ -109,12 +126,9 @@ var requestHandler = function(request, response) {
       fileurl = request.url;
     }
 
-    var filepath = path.resolve('./client' + fileurl); 
+    var filepath = path.resolve('../client' + fileurl); 
     var fileExt = path.extname(filepath); 
     var mimeType = mimeLookup[fileExt]; 
-
-    // response.writeHead(200, { 'content-type': 'text/html' });
-    // fs.createReadStream('../client/index.html').pipe(response);
 
     if (mimeType) { 
       fs.exists(filepath, function (exists) {

@@ -61,7 +61,6 @@ var app = {
       contentType: 'application/json',
       // data: { order: '-createdAt'},
       success: function(data) {
-        debugger;
         data = JSON.parse(data);
         // debugger;
         // Don't bother if we have nothing to work with
@@ -85,7 +84,6 @@ var app = {
         }
       },
       error: function(data) {
-        debugger;
         console.error('chatterbox: Failed to fetch messages');
       }
     });

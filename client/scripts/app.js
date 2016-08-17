@@ -44,7 +44,6 @@ var app = {
       data: JSON.stringify(data),
       contentType: 'application/json',
       success: function (data) {
-        debugger;
         // Trigger a fetch to update the messages, pass true to animate
         app.fetch();
       },
@@ -61,8 +60,7 @@ var app = {
       contentType: 'application/json',
       // data: { order: '-createdAt'},
       success: function(data) {
-        data = JSON.parse(data);
-        // debugger;
+        // data = JSON.parse(data);
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
 

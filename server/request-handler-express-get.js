@@ -4,9 +4,12 @@ var fs = require('fs');
 var requestHandlerGET = function(req, res) {
   console.log('Serving request type ' + req.method + ' for url ' + req.url);
 
-  // var messages = require('../server/messages.json');
-  var messages = JSON.parse(fs.readFileSync('./server/messages.json', 'utf8'));
-  res.status(200).send(messages);
+  fs.readFile('./server/messages.json', 'utf8', (err, data) => {
+    if (err) { throw err; }
+    // data = JSON.parse(data);
+    res.status(200).send(data);
+    console.log('Client received messages');
+  });
 };
 
 exports.requestHandlerGET = requestHandlerGET;

@@ -25,6 +25,8 @@ var ip = '127.0.0.1';
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
+
+/***************** NODE JS ************************/
 // var server = http.createServer(handleRequest);
 
 /*********** EXPRESS *************/
@@ -35,6 +37,8 @@ server.use(express.static('./client'));
 server.route('/classes/messages')
   .get(handleRequestGET)
   .post(handleRequestPOST);
+/************************************/
+
 console.log('Listening on http://' + ip + ':' + port);
 
 server.listen(port, ip);

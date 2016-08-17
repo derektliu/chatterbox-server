@@ -1,1 +1,8 @@
-{"results":[{"username":"Derek","text":"Test","roomname":"lobby","objectId":"9b4df08a-4205-fe53-0bd3-0ca2bcdd986f"},{"username":"Derek","text":"Test","roomname":"lobby","objectId":"054c4702-1051-3c57-bbdf-c46bdba9cea7"},{"username":"Derek","text":"why is this synchronous","roomname":"lobby","objectId":"14d7ca5c-2143-d476-97da-161f2519ccd4"},{"username":"Derek","text":"wow","roomname":"lobby","objectId":"c6c5782f-b4e1-5fbe-4967-ce99afef2b88"},{"username":"Derek","text":"why it take so long","roomname":"lobby","objectId":"656138e2-5900-4da6-d9d0-8cbc1cb4b410"},{"username":"Derek","text":"RERDSLFKJL:DFLSDKFj","roomname":"lobby","objectId":"a9f958f7-f2e5-14df-34a5-c2a488f37ff6"},{"username":"Derek","text":"EHlloo","roomname":"lobby","objectId":"533d7dc3-72b0-8a39-1a0b-58c1f018d2ba"},{"username":"Derek","text":"Test","roomname":"lobby","objectId":"b316ff3e-d1e8-e7e8-4f6f-bb7f606c29fd"},{"username":"HAL 9000","text":"Hello Dave.","roomname":"lobby","objectID":"0"}]}
+{
+  "results": [{
+    "username": "HAL 9000",
+    "text": "Hello Dave.",
+    "roomname": "lobby",
+    "objectID": "0"
+  }]
+}
